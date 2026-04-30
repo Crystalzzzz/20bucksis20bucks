@@ -1,7 +1,7 @@
 plugins {
     id("fabric-loom")
     java
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm") version "2.1.0"
 }
 
 group = property("maven_group")!!
@@ -9,14 +9,20 @@ version = property("mod_version")!!
 
 repositories {
     mavenCentral()
-
-    maven("https://maven.terraformersmc.com/") // modmenu
+    maven("https://maven.terraformersmc.com/")
     maven("https://maven.gegy.dev")
-    maven("https://jitpack.io")
-    maven("https://maven.isxander.dev/releases")  // yacl
-    maven("https://maven.shedaniel.me") // REI
+    maven("https://maven.shedaniel.me")
+    maven("https://maven.isxander.dev/releases") {
+        content { includeGroup("dev.isxander") }
+    }
+    maven("https://maven.quiltmc.org/repository/release") {
+        content { includeGroup("org.quiltmc.parsers") }
+    }
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
     maven("https://maven.ladysnake.org/releases")
+    maven("https://jitpack.io") {
+        content { excludeGroup("dev.isxander") }
+    }
 }
 
 dependencies {
@@ -28,23 +34,20 @@ dependencies {
     modImplementation("dev.isxander:yet-another-config-lib:${property("yacl_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
 
-    modImplementation("me.shedaniel:RoughlyEnoughItems-api-fabric:${property("rei_version")}")
-
-    include(modImplementation("com.github.0x3C50:Renderer:master-SNAPSHOT")!!)
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${property("rei_version")}")
 
     setOf(
         "fabric-api-base",
         "fabric-lifecycle-events-v1",
-        "fabric-networking-api-v1"
+        "fabric-networking-api-v1",
+        "fabric-rendering-v1"
     ).forEach {
-        // Add each module as a dependency
         modImplementation(fabricApi.module(it, property("fabric_version") as String))
     }
 
     modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${property("rei_version")}")
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.1.2")
 }
-
 
 tasks {
     processResources {
@@ -59,10 +62,21 @@ tasks {
     }
 
     compileKotlin {
-        kotlinOptions.jvmTarget = "17"
+        kotlinOptions.jvmTarget = "21"
+    }
+
+    compileJava {
+        options.release = 21
+    }
+}
+
+loom {
+    mixin {
+        defaultRefmapName = "void.refmap.json"
     }
 }
 
 java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
     withSourcesJar()
 }

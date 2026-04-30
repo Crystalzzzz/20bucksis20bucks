@@ -3,8 +3,6 @@ package net.horizonsend.client.mixins;
 import net.horizonsend.client.Caches;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.text.LiteralTextContent;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +16,7 @@ public class PlayerListMixin {
     private void injected(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
         if (Caches.INSTANCE.getModUsers().contains(entry.getProfile().getId())) {
             cir.setReturnValue(
-                    MutableText.of(new LiteralTextContent("✔ "))
+                    Text.literal("✔ ")
                             .formatted(Formatting.GREEN)
                             .append(cir.getReturnValue())
             );

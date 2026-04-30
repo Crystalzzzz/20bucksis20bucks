@@ -7,7 +7,9 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 
-	plugins {
-		id("fabric-loom") version "1.1-SNAPSHOT"
-	}
+    plugins {
+        id("fabric-loom") version "1.13-SNAPSHOT"
+        java
+        kotlin("jvm") version "2.1.0"
+    }
 }

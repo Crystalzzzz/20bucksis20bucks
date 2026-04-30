@@ -51,8 +51,8 @@ object ShipData {
             _isPiloting = buf.readBoolean()
             if (!_isPiloting) return
 
-            _name = buf.readText()
-            _type = buf.readText()
+            _name = Text.of(buf.readString())
+            _type = Text.of(buf.readString())
             _targets = mutableMapOf<String, String>().apply {
                 repeat(buf.readInt()) {
                     put(buf.readString(), buf.readString())

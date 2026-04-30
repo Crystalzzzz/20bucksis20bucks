@@ -8,7 +8,9 @@ import net.horizonsend.client.networking.IonPacketHandler
 import net.horizonsend.client.networking.Packets
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayNetworkHandler
+import net.minecraft.item.ItemStack
 import net.minecraft.network.PacketByteBuf
+import net.minecraft.network.RegistryByteBuf
 
 object HandshakePacket : IonPacketHandler() {
     override val name = "handshake"
@@ -18,21 +20,22 @@ object HandshakePacket : IonPacketHandler() {
         buf: PacketByteBuf,
         responseSender: PacketSender
     ) {
+        val registryBuf = buf as RegistryByteBuf
+
         MinecraftClient.getInstance().send {
             Packets.HANDSHAKE.send()
         }
         if (Void.reiExists) {
             ReiIntegration.items.clear()
 
-            for (i in 1..buf.readInt()) {
-                ReiIntegration.items.add(buf.readItemStack())
+            for (i in 1..registryBuf.readInt()) {
+                ReiIntegration.items.add(ItemStack.PACKET_CODEC.decode(registryBuf))
             }
 
             Thread {
                 while (PluginManager.getInstance().isReloading) {
                     Thread.sleep(1)
                 }
-
                 PluginManager.getInstance().startReload()
             }.start()
         }
