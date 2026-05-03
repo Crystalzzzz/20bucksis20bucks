@@ -8,7 +8,8 @@ import java.awt.Color
 
 object ShipStatusDisplay {
     fun init() {
-        HudRenderCallback.EVENT.register { context, _ ->
+        HudRenderCallback.EVENT.register { context, renderTickCounter ->
+            println("isPiloting: ${ShipData.isPiloting}")
             if (!ShipData.isPiloting) return@register
             renderHud(context)
         }
